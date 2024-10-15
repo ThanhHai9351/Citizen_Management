@@ -8,6 +8,7 @@ com\mycompany\qlcongdan\Dashboard.class
 com\mycompany\qlcongdan\frmThongTin$1.class
 com\mycompany\qlcongdan\Login$1.class
 com\mycompany\qlcongdan\frmThongTin$4.class
+com\mycompany\qlcongdan\Neo4jConnection.class
 com\mycompany\qlcongdan\Dashboard$2.class
 com\mycompany\qlcongdan\Login.class
 com\mycompany\qlcongdan\frmThongTin$3.class

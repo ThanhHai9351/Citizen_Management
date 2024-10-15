@@ -4,7 +4,15 @@
  */
 package com.mycompany.qlcongdan;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.ImageIcon;
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.types.Node;
 
 /**
  *
@@ -15,18 +23,60 @@ public class frmThongTin extends javax.swing.JFrame {
     /**
      * Creates new form frmThongTin
      */
+    String id = "C004";
+    private Neo4jConnection neo4jConnection;
     public frmThongTin() {
         initComponents();
         pnGiayTo.setVisible(true);
         showIcon();
+        showInformationCitizen(id);
+    }
+    
+    public frmThongTin(String id) {
+        initComponents();
+        pnGiayTo.setVisible(true);
+        showIcon();
+        this.id = id;
+        showInformationCitizen(id);
     }
     
      public void showIcon()
     {
         ImageIcon icon = new ImageIcon(getClass().getResource("/images/user.png"));
         imgAvata.setIcon(icon);
-
     }
+     
+    public void showInformationCitizen(String id) {
+    Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+        try (Session session = driver.session()) {
+
+            String citizenQuery = "MATCH (c:Citizen{id:'"+id+"'}) RETURN c limit 1";
+            Result citizenResult = session.run(citizenQuery);
+            System.out.println("Citizens:");
+            while (citizenResult.hasNext()) {
+                org.neo4j.driver.Record record = citizenResult.next();
+                Node citizen = record.get("c").asNode();
+                lb_IDCitizen.setText( citizen.get("id").asString());
+                lb_Name.setText( citizen.get("name").asString());
+                lb_Gender.setText( citizen.get("name").asString());
+                lb_Nationality.setText( citizen.get("nationality").asString());
+                lb_DOB.setText( citizen.get("date_of_birth").asString());
+                System.out.println("ID: " + citizen.get("id").asString());
+                System.out.println("Name: " + citizen.get("name").asString());
+                System.out.println("Gender: " + citizen.get("name").asString());
+                System.out.println("Nationality: " + citizen.get("nationality").asString());
+                System.out.println("Date of Birth: " + citizen.get("date_of_birth").asString());
+                System.out.println("------------------------------");
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred while connecting to Neo4j: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            driver.close(); 
+        }
+}
+
+
     
 
     /**
@@ -40,8 +90,6 @@ public class frmThongTin extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         imgAvata = new javax.swing.JLabel();
         btnExit = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -56,7 +104,15 @@ public class frmThongTin extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        lb_IDCitizen = new javax.swing.JLabel();
+        lb_Name = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        lb_Gender = new javax.swing.JLabel();
+        lb_Nationality = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        lb_DOB = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
         pnContainer = new javax.swing.JPanel();
         pnSuKien = new javax.swing.JPanel();
         pnGiayTo = new javax.swing.JPanel();
@@ -69,39 +125,23 @@ public class frmThongTin extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(0, 51, 255));
 
-        jLabel1.setText("ID:");
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("2001215742");
-
         imgAvata.setText("jLabel11");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(imgAvata, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(imgAvata, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
                 .addComponent(imgAvata, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addGap(16, 16, 16))
+                .addGap(34, 34, 34))
         );
 
         btnExit.setBackground(new java.awt.Color(255, 0, 51));
@@ -273,7 +313,7 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addComponent(btnCongViec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnQuanHe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 140, Short.MAX_VALUE)
                 .addComponent(btnSuKien, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -289,37 +329,105 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Mã công dân:");
 
-        jLabel6.setBackground(new java.awt.Color(0, 51, 255));
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(0, 51, 255));
-        jLabel6.setText("2001215742");
+        lb_IDCitizen.setBackground(new java.awt.Color(0, 51, 255));
+        lb_IDCitizen.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lb_IDCitizen.setForeground(new java.awt.Color(0, 51, 255));
+        lb_IDCitizen.setText("2001215742");
+
+        lb_Name.setBackground(new java.awt.Color(0, 51, 255));
+        lb_Name.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lb_Name.setForeground(new java.awt.Color(0, 51, 255));
+        lb_Name.setText("2001215742");
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel6.setText("Tên công dân");
+
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel11.setText("Giới tính");
+
+        lb_Gender.setBackground(new java.awt.Color(0, 51, 255));
+        lb_Gender.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lb_Gender.setForeground(new java.awt.Color(0, 51, 255));
+        lb_Gender.setText("2001215742");
+
+        lb_Nationality.setBackground(new java.awt.Color(0, 51, 255));
+        lb_Nationality.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lb_Nationality.setForeground(new java.awt.Color(0, 51, 255));
+        lb_Nationality.setText("2001215742");
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel12.setText("Quốc tịch:");
+
+        lb_DOB.setBackground(new java.awt.Color(0, 51, 255));
+        lb_DOB.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        lb_DOB.setForeground(new java.awt.Color(0, 51, 255));
+        lb_DOB.setText("2001215742");
+
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel13.setText("Năm sinh:");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(137, 137, 137)
-                        .addComponent(jLabel4))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(137, 137, 137)
+                .addComponent(jLabel4)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addComponent(jLabel13)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lb_DOB, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel4Layout.createSequentialGroup()
+                            .addComponent(jLabel5)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(lb_IDCitizen, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel11)
+                        .addGap(40, 40, 40)
+                        .addComponent(lb_Gender, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel12)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lb_Nationality, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lb_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(22, 22, 22))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
                 .addComponent(jLabel4)
-                .addGap(18, 18, 18)
+                .addGap(39, 39, 39)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jLabel6))
-                .addContainerGap(171, Short.MAX_VALUE))
+                    .addComponent(lb_IDCitizen)
+                    .addComponent(jLabel6)
+                    .addComponent(lb_Name))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(lb_Gender)
+                    .addComponent(jLabel12)
+                    .addComponent(lb_Nationality))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(lb_DOB))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         pnSuKien.setBackground(new java.awt.Color(0, 153, 51));
@@ -332,7 +440,7 @@ public class frmThongTin extends javax.swing.JFrame {
         );
         pnSuKienLayout.setVerticalGroup(
             pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 195, Short.MAX_VALUE)
+            .addGap(0, 399, Short.MAX_VALUE)
         );
 
         pnGiayTo.setBackground(new java.awt.Color(255, 255, 255));
@@ -358,7 +466,7 @@ public class frmThongTin extends javax.swing.JFrame {
         );
         pnCongViecLayout.setVerticalGroup(
             pnCongViecLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 195, Short.MAX_VALUE)
+            .addGap(0, 399, Short.MAX_VALUE)
         );
 
         pnQuanHe.setBackground(new java.awt.Color(102, 102, 0));
@@ -371,7 +479,7 @@ public class frmThongTin extends javax.swing.JFrame {
         );
         pnQuanHeLayout.setVerticalGroup(
             pnQuanHeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 195, Short.MAX_VALUE)
+            .addGap(0, 399, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout pnContainerLayout = new javax.swing.GroupLayout(pnContainer);
@@ -496,9 +604,10 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JPanel btnQuanHe;
     private javax.swing.JPanel btnSuKien;
     private javax.swing.JLabel imgAvata;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -509,6 +618,11 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JLabel lb_DOB;
+    private javax.swing.JLabel lb_Gender;
+    private javax.swing.JLabel lb_IDCitizen;
+    private javax.swing.JLabel lb_Name;
+    private javax.swing.JLabel lb_Nationality;
     private javax.swing.JPanel pnCongViec;
     private javax.swing.JPanel pnContainer;
     private javax.swing.JPanel pnGiayTo;

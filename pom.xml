@@ -11,6 +11,12 @@
             <artifactId>neo4j-java-driver</artifactId>
             <version>5.24.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.geirsson</groupId>
+            <artifactId>monadic-rx_sjs1_2.12</artifactId>
+            <version>0.5.0-M1-scalajs1</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
