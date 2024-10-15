@@ -11,7 +11,7 @@ package com.mycompany.qlcongdan;
 public class QLCongDan {
 
     public static void main(String[] args) {
-        Login frm = new Login();
+        frmThongTin frm = new frmThongTin();
         frm.setVisible(true);
     }
 }

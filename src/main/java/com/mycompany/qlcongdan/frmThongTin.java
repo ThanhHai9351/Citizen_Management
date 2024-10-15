@@ -4,14 +4,23 @@
  */
 package com.mycompany.qlcongdan;
 
+import java.awt.Color;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
+import org.neo4j.driver.Values;
 import org.neo4j.driver.types.Node;
 
 /**
@@ -27,9 +36,46 @@ public class frmThongTin extends javax.swing.JFrame {
     private Neo4jConnection neo4jConnection;
     public frmThongTin() {
         initComponents();
-        pnGiayTo.setVisible(true);
-        showIcon();
+        btnGiayTo.setVisible(true);
+        showIcon(); 
         showInformationCitizen(id);
+        showTableDocument(id);
+        showType();
+    }
+    
+    public void showType()
+    {
+       String[] types = {"BHYT", "CCCD", "BHTN"};
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(types);
+        cbo_Type.setModel(model); 
+        cbo_Type.setSelectedItem(types[0]);
+    };
+    
+    public void showTableDocument(String id)
+    {
+         DefaultTableModel model = (DefaultTableModel) tb_Document.getModel();
+        model.setRowCount(0); 
+       Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+        try (Session session = driver.session()) {
+
+            String query = "MATCH (p:Citizen{id:'"+id+"'})-[t:OWNS_DOCUMENT]->(d:Document) RETURN d";
+            Result result = session.run(query);
+            while (result.hasNext()) {
+                org.neo4j.driver.Record record = result.next();
+                Node document = record.get("d").asNode();
+                String documentid = document.get("document_id").asString();
+                String issue_date =  document.get("issue_date").asString();
+                String expiry_date = document.get("expiry_date").asString();
+                String type = document.get("type").asString();
+                model.addRow(new Object[]{documentid, issue_date, expiry_date, type});
+            }
+            tb_Document.setModel(model);
+        } catch (Exception e) {
+            System.err.println("Error occurred while connecting to Neo4j: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            driver.close(); 
+        }
     }
     
     public frmThongTin(String id) {
@@ -47,26 +93,19 @@ public class frmThongTin extends javax.swing.JFrame {
     }
      
     public void showInformationCitizen(String id) {
-    Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+        Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
         try (Session session = driver.session()) {
 
             String citizenQuery = "MATCH (c:Citizen{id:'"+id+"'}) RETURN c limit 1";
             Result citizenResult = session.run(citizenQuery);
-            System.out.println("Citizens:");
             while (citizenResult.hasNext()) {
                 org.neo4j.driver.Record record = citizenResult.next();
                 Node citizen = record.get("c").asNode();
                 lb_IDCitizen.setText( citizen.get("id").asString());
                 lb_Name.setText( citizen.get("name").asString());
-                lb_Gender.setText( citizen.get("name").asString());
+                lb_Gender.setText( citizen.get("gender").asString());
                 lb_Nationality.setText( citizen.get("nationality").asString());
                 lb_DOB.setText( citizen.get("date_of_birth").asString());
-                System.out.println("ID: " + citizen.get("id").asString());
-                System.out.println("Name: " + citizen.get("name").asString());
-                System.out.println("Gender: " + citizen.get("name").asString());
-                System.out.println("Nationality: " + citizen.get("nationality").asString());
-                System.out.println("Date of Birth: " + citizen.get("date_of_birth").asString());
-                System.out.println("------------------------------");
             }
         } catch (Exception e) {
             System.err.println("Error occurred while connecting to Neo4j: " + e.getMessage());
@@ -75,6 +114,28 @@ public class frmThongTin extends javax.swing.JFrame {
             driver.close(); 
         }
 }
+    
+    public void showAgency(String documentid)
+    {
+         Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+        try (Session session = driver.session()) {
+
+            String query = "MATCH (d:Document{document_id:'"+documentid+"'})-[:ISSUED_BY]->(a:Agency) RETURN a";
+            Result result = session.run(query);
+            while (result.hasNext()) {
+                org.neo4j.driver.Record record = result.next();
+                Node citizen = record.get("a").asNode();
+                txt_Agencyid.setText( citizen.get("agency_id").asString());
+                txt_Agencyname.setText( citizen.get("agency_name").asString());
+                txt_Agencyaddress.setText( citizen.get("agency_address").asString());
+            }
+        } catch (Exception e) {
+            System.err.println("Error occurred while connecting to Neo4j: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            driver.close(); 
+        }
+    }
 
 
     
@@ -116,6 +177,28 @@ public class frmThongTin extends javax.swing.JFrame {
         pnContainer = new javax.swing.JPanel();
         pnSuKien = new javax.swing.JPanel();
         pnGiayTo = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tb_Document = new javax.swing.JTable();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        txt_Documentid = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        txt_Issuedate = new javax.swing.JTextField();
+        txt_Expiredate = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        txt_Agencyid = new javax.swing.JTextField();
+        txt_Agencyname = new javax.swing.JTextField();
+        jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        txt_Agencyaddress = new javax.swing.JTextField();
+        cbo_Type = new javax.swing.JComboBox<>();
+        jLabel19 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        btn_Create = new javax.swing.JButton();
+        btn_Delete = new javax.swing.JButton();
+        btn_Sua = new javax.swing.JButton();
         pnCongViec = new javax.swing.JPanel();
         pnQuanHe = new javax.swing.JPanel();
 
@@ -123,7 +206,7 @@ public class frmThongTin extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(204, 255, 204));
 
-        jPanel2.setBackground(new java.awt.Color(0, 51, 255));
+        jPanel2.setBackground(new java.awt.Color(204, 255, 255));
 
         imgAvata.setText("jLabel11");
 
@@ -133,15 +216,12 @@ public class frmThongTin extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(imgAvata, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31))
+                .addComponent(imgAvata, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(imgAvata, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
-                .addGap(34, 34, 34))
+            .addComponent(imgAvata, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
         );
 
         btnExit.setBackground(new java.awt.Color(255, 0, 51));
@@ -313,9 +393,9 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addComponent(btnCongViec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnQuanHe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 140, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSuKien, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -392,19 +472,19 @@ public class frmThongTin extends javax.swing.JFrame {
                             .addComponent(lb_IDCitizen, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel11)
-                        .addGap(40, 40, 40)
-                        .addComponent(lb_Gender, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lb_Gender, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(28, 28, 28)
                         .addComponent(lb_Nationality, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lb_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(22, 22, 22))
+                        .addComponent(lb_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(16, 16, 16))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -412,17 +492,23 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addComponent(jLabel4)
                 .addGap(39, 39, 39)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(lb_IDCitizen)
-                    .addComponent(jLabel6)
-                    .addComponent(lb_Name))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(lb_Gender)
-                    .addComponent(jLabel12)
-                    .addComponent(lb_Nationality))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(lb_IDCitizen))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel11)
+                            .addComponent(lb_Gender)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(lb_Name))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel12)
+                            .addComponent(lb_Nationality))))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
@@ -445,15 +531,207 @@ public class frmThongTin extends javax.swing.JFrame {
 
         pnGiayTo.setBackground(new java.awt.Color(255, 255, 255));
 
+        tb_Document.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "document_id", "issue_date", "expire_date", "type"
+            }
+        ));
+        tb_Document.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tb_DocumentMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tb_Document);
+
+        jLabel1.setText("id:");
+
+        jLabel2.setText("issue_date:");
+
+        txt_Issuedate.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txt_IssuedateFocusLost(evt);
+            }
+        });
+        txt_Issuedate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txt_IssuedateActionPerformed(evt);
+            }
+        });
+
+        txt_Expiredate.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txt_ExpiredateFocusLost(evt);
+            }
+        });
+
+        jLabel14.setText("expire_date:");
+
+        jLabel15.setText("type:");
+
+        jLabel16.setText("id:");
+
+        jLabel17.setText("name:");
+
+        jLabel18.setText("address:");
+
+        cbo_Type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        jLabel19.setFont(new java.awt.Font("Segoe UI", 2, 18)); // NOI18N
+        jLabel19.setForeground(new java.awt.Color(0, 51, 204));
+        jLabel19.setText("Agency");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(txt_Expiredate, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txt_Documentid, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cbo_Type, javax.swing.GroupLayout.Alignment.LEADING, 0, 134, Short.MAX_VALUE)
+                    .addComponent(txt_Issuedate))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(6, 6, 6)))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txt_Agencyaddress, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txt_Agencyname, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(txt_Agencyid, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(txt_Documentid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(31, 31, 31))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel19)
+                        .addGap(18, 18, 18)))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txt_Agencyid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel16)
+                    .addComponent(txt_Issuedate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(jLabel17)
+                    .addComponent(txt_Agencyname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txt_Expiredate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel15)
+                    .addComponent(jLabel18)
+                    .addComponent(txt_Agencyaddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cbo_Type, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(25, 25, 25))
+        );
+
+        btn_Create.setBackground(new java.awt.Color(51, 153, 0));
+        btn_Create.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_Create.setForeground(new java.awt.Color(255, 255, 255));
+        btn_Create.setText("THÊM");
+        btn_Create.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_CreateActionPerformed(evt);
+            }
+        });
+
+        btn_Delete.setBackground(new java.awt.Color(255, 0, 0));
+        btn_Delete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_Delete.setForeground(new java.awt.Color(255, 255, 255));
+        btn_Delete.setText("XÓA");
+        btn_Delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_DeleteActionPerformed(evt);
+            }
+        });
+
+        btn_Sua.setBackground(new java.awt.Color(153, 153, 0));
+        btn_Sua.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_Sua.setForeground(new java.awt.Color(255, 255, 255));
+        btn_Sua.setText("SỬA");
+        btn_Sua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_SuaActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btn_Sua, javax.swing.GroupLayout.DEFAULT_SIZE, 76, Short.MAX_VALUE)
+                    .addComponent(btn_Delete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btn_Create, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btn_Create, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29)
+                .addComponent(btn_Sua, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(17, 17, 17))
+        );
+
         javax.swing.GroupLayout pnGiayToLayout = new javax.swing.GroupLayout(pnGiayTo);
         pnGiayTo.setLayout(pnGiayToLayout);
         pnGiayToLayout.setHorizontalGroup(
             pnGiayToLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 513, Short.MAX_VALUE)
+            .addGroup(pnGiayToLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnGiayToLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnGiayToLayout.createSequentialGroup()
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE))
+                .addContainerGap())
         );
         pnGiayToLayout.setVerticalGroup(
             pnGiayToLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(pnGiayToLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnGiayToLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pnCongViec.setBackground(new java.awt.Color(255, 102, 102));
@@ -558,10 +836,214 @@ public class frmThongTin extends javax.swing.JFrame {
         pnGiayTo.setVisible(false);
     }//GEN-LAST:event_btnSuKienMouseClicked
 
+    
     private void btnExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExitMouseClicked
          this.setVisible(false);
     }//GEN-LAST:event_btnExitMouseClicked
 
+     public boolean isValidDate(String date) {
+         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        try {
+            LocalDate localDate = LocalDate.parse(date, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+     
+    private void tb_DocumentMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tb_DocumentMouseClicked
+       int row = tb_Document.getSelectedRow(); 
+        if (row != -1) { 
+            String documentId = tb_Document.getValueAt(row, 0).toString();
+            String issueDate = tb_Document.getValueAt(row, 1).toString();
+            String expiryDate = tb_Document.getValueAt(row, 2).toString();
+            String type = tb_Document.getValueAt(row, 3).toString();
+
+            txt_Documentid.setText(documentId);
+            txt_Issuedate.setText(issueDate); 
+            txt_Expiredate.setText(expiryDate);
+            cbo_Type.setSelectedItem(type);
+            
+            showAgency(documentId);
+        }
+    }//GEN-LAST:event_tb_DocumentMouseClicked
+
+    private void txt_IssuedateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_IssuedateActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_IssuedateActionPerformed
+
+    private void btn_CreateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_CreateActionPerformed
+       if (!isValidData()) {
+            JOptionPane.showMessageDialog(this, "Thông báo!", "Bạn điền chưa đủ thông tin!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+        try (Session session = driver.session()) {
+            String documentID = txt_Documentid.getText(); 
+            String issueDate = txt_Issuedate.getText();  
+            String expiryDate = txt_Expiredate.getText(); 
+            String type = cbo_Type.getSelectedItem().toString(); 
+            String agencyid = txt_Agencyid.getText();
+            String agencyname = txt_Agencyname.getText();
+            String agencyaddress = txt_Agencyaddress.getText();
+
+            String createDocumentQuery = "MATCH (p:Citizen {id: $id}) " + 
+                                         "CREATE (d:Document {issue_date: $issue_date, expiry_date: $expiry_date, document_id: $document_id, type: $type}), " +
+                                         "(a:Agency {agency_name: $agency_name, agency_address: $agency_address, agency_id: $agency_id}), " +
+                                         "(p)-[:OWNS_DOCUMENT]->(d), (d)-[:ISSUED_BY]->(a)";
+
+            session.run(createDocumentQuery, 
+                Values.parameters(
+                    "id", id, 
+                    "document_id", documentID,
+                    "issue_date", issueDate,
+                    "expiry_date", expiryDate,
+                    "type", type,
+                    "agency_name", agencyname,
+                    "agency_address", agencyaddress,
+                    "agency_id", agencyid
+                )
+            );
+
+            JOptionPane.showMessageDialog(this, "Thêm thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            clearData();
+            showTableDocument(id);  
+
+        } catch (Exception e) {
+            System.err.println("Error occurred while connecting to Neo4j: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            driver.close(); 
+        }
+    }//GEN-LAST:event_btn_CreateActionPerformed
+
+    private void btn_SuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_SuaActionPerformed
+       if (!isValidData()) {
+            JOptionPane.showMessageDialog(this, "Thông báo!", "Bạn điền chưa đủ thông tin!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+        try (Session session = driver.session()) {
+            String documentID = txt_Documentid.getText(); 
+            String issueDate = txt_Issuedate.getText();  
+            String expiryDate = txt_Expiredate.getText(); 
+            String type = cbo_Type.getSelectedItem().toString(); 
+            String agencyid = txt_Agencyid.getText();
+            String agencyname = txt_Agencyname.getText();
+            String agencyaddress = txt_Agencyaddress.getText();
+
+            String updateDocumentQuery = "MATCH (p:Citizen {id: $id})-[:OWNS_DOCUMENT]->(d:Document {document_id: $document_id}) " + 
+                                         "MATCH (d)-[r:ISSUED_BY]->(a:Agency {agency_id: $agency_id}) " +
+                                         "SET d.issue_date = $issue_date, d.expiry_date = $expiry_date, d.type = $type, " +
+                                         "a.agency_name = $agency_name, a.agency_address = $agency_address";
+
+            session.run(updateDocumentQuery, 
+                Values.parameters(
+                    "id", id, 
+                    "document_id", documentID,
+                    "issue_date", issueDate,
+                    "expiry_date", expiryDate,
+                    "type", type,
+                    "agency_name", agencyname,
+                    "agency_address", agencyaddress,
+                    "agency_id", agencyid
+                )
+            );
+
+            JOptionPane.showMessageDialog(this, "Sửa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+             clearData();
+            showTableDocument(id);  
+
+        } catch (Exception e) {
+            System.err.println("Error occurred while connecting to Neo4j: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            driver.close();  
+        }
+
+    }//GEN-LAST:event_btn_SuaActionPerformed
+
+ 
+    
+    private void btn_DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_DeleteActionPerformed
+        if (!isValidData()) {
+            JOptionPane.showMessageDialog(this, "Thông báo!", "Bạn điền chưa đủ thông tin!", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "12345678"));
+        try (Session session = driver.session()) {
+            String documentID = txt_Documentid.getText();
+            String agencyid = txt_Agencyid.getText();
+
+            String deleteDocumentQuery = "MATCH (p:Citizen {id: $id})-[:OWNS_DOCUMENT]->(d:Document {document_id: $document_id}) " +
+                                         "MATCH (d)-[:ISSUED_BY]->(a:Agency {agency_id: $agency_id}) " +
+                                         "DETACH DELETE d, a";
+
+            session.run(deleteDocumentQuery, 
+                Values.parameters(
+                    "id", id, 
+                    "document_id", documentID,
+                    "agency_id", agencyid
+                )
+            );
+
+            JOptionPane.showMessageDialog(this, "Xóa thành công!", "Thông báo!", JOptionPane.INFORMATION_MESSAGE);
+             clearData();
+            showTableDocument(id);  
+
+        } catch (Exception e) {
+            System.err.println("Error occurred while connecting to Neo4j: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            driver.close();  
+        }
+    }//GEN-LAST:event_btn_DeleteActionPerformed
+
+    private void txt_IssuedateFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_IssuedateFocusLost
+        if(!isValidDate(txt_Issuedate.getText()))
+        {
+             JOptionPane.showMessageDialog(this, "Định dạng ngày không hợp lệ!", "Thông báo!", JOptionPane.ERROR_MESSAGE);
+             txt_Issuedate.setText("");
+        }
+    }//GEN-LAST:event_txt_IssuedateFocusLost
+
+    private void txt_ExpiredateFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_ExpiredateFocusLost
+        if(!isValidDate(txt_Issuedate.getText()))
+        {
+             JOptionPane.showMessageDialog(this, "Định dạng ngày không hợp lệ!", "Thông báo!", JOptionPane.ERROR_MESSAGE);
+             txt_Issuedate.setText("");
+        }
+    }//GEN-LAST:event_txt_ExpiredateFocusLost
+
+    public boolean isValidData()
+    {
+        String documentid = txt_Documentid.getText();
+        String issue_date = txt_Issuedate.getText();
+        String expire_date = txt_Expiredate.getText();
+        String agencyid = txt_Agencyid.getText();
+        String agencyname = txt_Agencyname.getText();
+        String address = txt_Agencyaddress.getText();
+        if(documentid.isEmpty()||issue_date.isEmpty()||agencyid.isEmpty()||agencyname.isEmpty()||expire_date.isEmpty()|| address.isEmpty())
+        {
+            return false;
+        }
+           return true;
+    }
+    
+    public void clearData()
+    {
+        txt_Documentid.setText("");
+        txt_Issuedate.setText("");
+         txt_Expiredate.setText("");
+        txt_Agencyid.setText("");
+       txt_Agencyname.setText("");
+        txt_Agencyaddress.setText("");
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -603,11 +1085,23 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JPanel btnGiayTo;
     private javax.swing.JPanel btnQuanHe;
     private javax.swing.JPanel btnSuKien;
+    private javax.swing.JButton btn_Create;
+    private javax.swing.JButton btn_Delete;
+    private javax.swing.JButton btn_Sua;
+    private javax.swing.JComboBox<String> cbo_Type;
     private javax.swing.JLabel imgAvata;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -617,7 +1111,10 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lb_DOB;
     private javax.swing.JLabel lb_Gender;
     private javax.swing.JLabel lb_IDCitizen;
@@ -628,5 +1125,12 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JPanel pnGiayTo;
     private javax.swing.JPanel pnQuanHe;
     private javax.swing.JPanel pnSuKien;
+    private javax.swing.JTable tb_Document;
+    private javax.swing.JTextField txt_Agencyaddress;
+    private javax.swing.JTextField txt_Agencyid;
+    private javax.swing.JTextField txt_Agencyname;
+    private javax.swing.JTextField txt_Documentid;
+    private javax.swing.JTextField txt_Expiredate;
+    private javax.swing.JTextField txt_Issuedate;
     // End of variables declaration//GEN-END:variables
 }
