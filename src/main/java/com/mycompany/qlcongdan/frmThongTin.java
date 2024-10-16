@@ -4,14 +4,25 @@
  */
 package com.mycompany.qlcongdan;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
+import org.neo4j.driver.Values;
 import org.neo4j.driver.types.Node;
 
 /**
@@ -25,7 +36,10 @@ public class frmThongTin extends javax.swing.JFrame {
      */
     String id = "C004";
     private Neo4jConnection neo4jConnection;
+    
     public frmThongTin() {
+                neo4jConnection=new Neo4jConnection();
+
         initComponents();
         pnGiayTo.setVisible(true);
         showIcon();
@@ -115,6 +129,19 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         pnContainer = new javax.swing.JPanel();
         pnSuKien = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        btnAdd = new javax.swing.JButton();
+        btnUpdate = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtIdEvent = new javax.swing.JTextField();
+        btnDelete = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbEvent = new javax.swing.JTable();
+        jLabel14 = new javax.swing.JLabel();
+        txtRole = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        txtDate = new javax.swing.JTextField();
+        txtTypeEvent = new javax.swing.JTextField();
         pnGiayTo = new javax.swing.JPanel();
         pnCongViec = new javax.swing.JPanel();
         pnQuanHe = new javax.swing.JPanel();
@@ -281,7 +308,7 @@ public class frmThongTin extends javax.swing.JFrame {
         btnSuKienLayout.setHorizontalGroup(
             btnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnSuKienLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 64, Short.MAX_VALUE)
                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         btnSuKienLayout.setVerticalGroup(
@@ -289,7 +316,7 @@ public class frmThongTin extends javax.swing.JFrame {
             .addGroup(btnSuKienLayout.createSequentialGroup()
                 .addGap(15, 15, 15)
                 .addComponent(jLabel10)
-                .addContainerGap(17, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -313,7 +340,7 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addComponent(btnCongViec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnQuanHe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 140, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 136, Short.MAX_VALUE)
                 .addComponent(btnSuKien, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -432,15 +459,141 @@ public class frmThongTin extends javax.swing.JFrame {
 
         pnSuKien.setBackground(new java.awt.Color(0, 153, 51));
 
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Type event");
+
+        btnAdd.setBackground(new java.awt.Color(255, 255, 255));
+        btnAdd.setForeground(new java.awt.Color(0, 0, 0));
+        btnAdd.setText("Add");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
+
+        btnUpdate.setBackground(new java.awt.Color(255, 255, 255));
+        btnUpdate.setForeground(new java.awt.Color(0, 0, 0));
+        btnUpdate.setText("Update");
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Id event");
+
+        txtIdEvent.setBackground(new java.awt.Color(255, 255, 255));
+        txtIdEvent.setForeground(new java.awt.Color(0, 0, 0));
+
+        btnDelete.setBackground(new java.awt.Color(255, 255, 255));
+        btnDelete.setForeground(new java.awt.Color(0, 0, 0));
+        btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
+
+        tbEvent.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Id event", "Type event", "Date event", "Role"
+            }
+        ));
+        tbEvent.setName("tbEvent"); // NOI18N
+        tbEvent.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbEventMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tbEvent);
+
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel14.setText("Role");
+
+        txtRole.setBackground(new java.awt.Color(255, 255, 255));
+        txtRole.setForeground(new java.awt.Color(0, 0, 0));
+
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel15.setText("Date");
+
+        txtDate.setBackground(new java.awt.Color(255, 255, 255));
+        txtDate.setForeground(new java.awt.Color(0, 0, 0));
+
+        txtTypeEvent.setBackground(new java.awt.Color(255, 255, 255));
+        txtTypeEvent.setForeground(new java.awt.Color(0, 0, 0));
+
         javax.swing.GroupLayout pnSuKienLayout = new javax.swing.GroupLayout(pnSuKien);
         pnSuKien.setLayout(pnSuKienLayout);
         pnSuKienLayout.setHorizontalGroup(
             pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 513, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnSuKienLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(pnSuKienLayout.createSequentialGroup()
+                        .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(pnSuKienLayout.createSequentialGroup()
+                                .addComponent(jLabel14)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtRole, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(pnSuKienLayout.createSequentialGroup()
+                                .addComponent(jLabel15)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnSuKienLayout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(txtIdEvent, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(pnSuKienLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtTypeEvent, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(pnSuKienLayout.createSequentialGroup()
+                                .addComponent(btnAdd)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnUpdate))
+                            .addComponent(btnDelete, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(32, 32, 32))
         );
         pnSuKienLayout.setVerticalGroup(
             pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 399, Short.MAX_VALUE)
+            .addGroup(pnSuKienLayout.createSequentialGroup()
+                .addGap(31, 31, 31)
+                .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(btnAdd)
+                    .addComponent(btnUpdate)
+                    .addComponent(txtTypeEvent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(btnDelete)
+                    .addComponent(txtIdEvent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(txtRole, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel15)
+                    .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pnGiayTo.setBackground(new java.awt.Color(255, 255, 255));
@@ -449,7 +602,7 @@ public class frmThongTin extends javax.swing.JFrame {
         pnGiayTo.setLayout(pnGiayToLayout);
         pnGiayToLayout.setHorizontalGroup(
             pnGiayToLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 513, Short.MAX_VALUE)
+            .addGap(0, 528, Short.MAX_VALUE)
         );
         pnGiayToLayout.setVerticalGroup(
             pnGiayToLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -556,11 +709,148 @@ public class frmThongTin extends javax.swing.JFrame {
         pnQuanHe.setVisible(false);
         pnCongViec.setVisible(false);
         pnGiayTo.setVisible(false);
+        loadPNSuKien(id);
     }//GEN-LAST:event_btnSuKienMouseClicked
+    public void loadPNSuKien(String id){
+        neo4jConnection.getSession();
+        DefaultTableModel model = (DefaultTableModel) tbEvent.getModel();
+        model.setRowCount(0);
+        try (var session = neo4jConnection.getSession()) {
+            Result result = session.run("MATCH (c:Citizen {id:'"+id+"'})-[p:PARTICIPATES_IN_EVENT]->(e:Event) RETURN e,p.role_in_event");
 
+            while (result.hasNext()) {
+                org.neo4j.driver.Record record = result.next();
+                Node event = record.get("e").asNode();
+                String event_id = event.get("event_id").asString();
+                String event_type = event.get("event_type").asString();
+                String event_date = event.get("event_date").asString();
+                String role = record.get("p.role_in_event").asString();
+
+                // Giả sử bạn đã xác định model là một DefaultTableModel
+                model.addRow(new Object[]{ event_id, event_type, event_date, role});
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Ghi lại bất kỳ lỗi nào
+        }
+    }
     private void btnExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExitMouseClicked
          this.setVisible(false);
     }//GEN-LAST:event_btnExitMouseClicked
+
+    private void tbEventMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbEventMouseClicked
+        int index=tbEvent.getSelectedRow();
+        txtIdEvent.setText(tbEvent.getValueAt(index, 0).toString());
+        txtRole.setText(tbEvent.getValueAt(index, 3).toString());
+        txtTypeEvent.setText(tbEvent.getValueAt(index, 1).toString());
+        txtDate.setText(tbEvent.getValueAt(index, 2).toString());
+    }//GEN-LAST:event_tbEventMouseClicked
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+        String eventId = txtIdEvent.getText();
+        String eventType = txtTypeEvent.getText();
+        String roleInEvent = txtRole.getText(); 
+        String eventDate = txtDate.getText(); 
+        String datePattern = "\\d{4}-\\d{2}-\\d{2}";
+    
+        if (!eventDate.matches(datePattern)) {
+            JOptionPane.showMessageDialog(this, "Ngày không hợp lệ. Vui lòng nhập theo định dạng YYYY-MM-DD");
+            return;
+        }
+        try {
+            LocalDate.parse(eventDate);
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Ngày không hợp lệ. Vui lòng nhập ngày hợp lệ theo định dạng YYYY-MM-DD");
+            return;
+        }
+        try (var session = neo4jConnection.getSession()) {
+            String checkQuery = "MATCH (e:Event {event_id: $eventId}) RETURN e";
+            var result = session.run(checkQuery, org.neo4j.driver.Values.parameters("eventId", eventId));
+
+            if (result.hasNext()) {
+                JOptionPane.showMessageDialog(this, "Event Id đã tồn tại");
+            } else {
+                String insertQuery = "MERGE (e:Event {event_id: $eventId, event_type: $eventType, event_date: $eventDate}) WITH e MATCH (c:Citizen {id: '"+id+"'}) MERGE (c)-[r:PARTICIPATES_IN_EVENT {role_in_event: $roleInEvent}]->(e)";
+                session.run(insertQuery, 
+                    org.neo4j.driver.Values.parameters(
+                        "eventId", eventId,
+                        "eventType", eventType,
+                        "eventDate", eventDate,
+                        "roleInEvent", roleInEvent
+                    )
+                );
+                JOptionPane.showMessageDialog(this, "Thêm thành công");
+                loadPNSuKien(id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Thêm thất bại: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
+        String eventId = txtIdEvent.getText();
+        String eventType = txtTypeEvent.getText();
+        String roleInEvent = txtRole.getText(); 
+        String eventDate = txtDate.getText(); 
+        try {
+            LocalDate.parse(eventDate);
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Ngày không hợp lệ. Vui lòng nhập ngày hợp lệ theo định dạng YYYY-MM-DD");
+            return;
+        }
+
+        try (var session = neo4jConnection.getSession()) {
+            String checkQuery = "MATCH (e:Event {event_id: $eventId}) RETURN e";
+            var result = session.run(checkQuery, org.neo4j.driver.Values.parameters("eventId", eventId));
+
+            if (!result.hasNext()) {
+                JOptionPane.showMessageDialog(this, "Event không tồn tại. Vui lòng kiểm tra Event ID.");
+            } else {
+                String updateQuery = "MATCH (e:Event {event_id: $eventId}) SET e.event_type = $eventType, e.event_date = $eventDate WITH e MATCH (c:Citizen {id: '"+id+"'})-[r:PARTICIPATES_IN_EVENT]->(e) SET r.role_in_event = $roleInEvent";
+
+                session.run(updateQuery, 
+                    org.neo4j.driver.Values.parameters(
+                        "eventId", eventId,
+                        "eventType", eventType,
+                        "eventDate", eventDate,
+                        "roleInEvent", roleInEvent
+                    )
+                );
+
+                JOptionPane.showMessageDialog(this, "Cập nhật thành công");
+                loadPNSuKien(id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Cập nhật thất bại: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnUpdateActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+         String eventId = txtIdEvent.getText();
+
+        try (var session = neo4jConnection.getSession()) {
+            String checkQuery = "MATCH (e:Event {event_id: $eventId}) RETURN e";
+            var result = session.run(checkQuery, org.neo4j.driver.Values.parameters("eventId", eventId));
+
+            if (!result.hasNext()) {
+                JOptionPane.showMessageDialog(this, "Event không tồn tại. Vui lòng kiểm tra Event ID.");
+            } else {
+                String deleteQuery = "MATCH (c:Citizen {id: '"+id+"'})-[r:PARTICIPATES_IN_EVENT]->(e:Event {event_id: $eventId}) " +
+                                     "DELETE r, e";
+
+                session.run(deleteQuery, org.neo4j.driver.Values.parameters("eventId", eventId));
+
+                JOptionPane.showMessageDialog(this, "Xóa thành công");
+                loadPNSuKien(id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Xóa thất bại: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+
 
     /**
      * @param args the command line arguments
@@ -598,16 +888,23 @@ public class frmThongTin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAdd;
     private javax.swing.JPanel btnCongViec;
+    private javax.swing.JButton btnDelete;
     private javax.swing.JPanel btnExit;
     private javax.swing.JPanel btnGiayTo;
     private javax.swing.JPanel btnQuanHe;
     private javax.swing.JPanel btnSuKien;
+    private javax.swing.JButton btnUpdate;
     private javax.swing.JLabel imgAvata;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -618,6 +915,7 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lb_DOB;
     private javax.swing.JLabel lb_Gender;
     private javax.swing.JLabel lb_IDCitizen;
@@ -628,5 +926,10 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JPanel pnGiayTo;
     private javax.swing.JPanel pnQuanHe;
     private javax.swing.JPanel pnSuKien;
+    private javax.swing.JTable tbEvent;
+    private javax.swing.JTextField txtDate;
+    private javax.swing.JTextField txtIdEvent;
+    private javax.swing.JTextField txtRole;
+    private javax.swing.JTextField txtTypeEvent;
     // End of variables declaration//GEN-END:variables
 }
