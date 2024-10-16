@@ -137,7 +137,44 @@ public class frmThongTin extends javax.swing.JFrame {
             driver.close();
         }
     }
+ public void loadCboCompany(){
+        cboNameCompany.removeAllItems();
+        try (var session = neo4jConnection.getSession()) {
+            // Thực hiện truy vấn và xử lý kết quả
+            Result result = session.run("MATCH (co:Company) RETURN co");
+            while (result.hasNext()) {
+                org.neo4j.driver.Record record = result.next();
+                Node company = record.get("co").asNode();
+                String company_name = company.get("company_name").asString();
+                cboNameCompany.addItem(company_name);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Ghi lại bất kỳ lỗi nào
+        }
+    }
+    public void loadWork(String idCatizen){
+        DefaultTableModel model = (DefaultTableModel) tblWork.getModel();
+        model.setRowCount(0);
+        try (var session = neo4jConnection.getSession()) {
+            // Truy vấn lấy thông tin công ty theo ID công dân
+            Result result = session.run("MATCH (ci:Citizen {id: $id})-[w:WORKS_AT]->(com:Company) " +
+                                         "RETURN w.job_title AS job_title, com.company_name AS company_name",
+                                         org.neo4j.driver.Values.parameters("id", idCatizen));
 
+            while (result.hasNext()) {
+                org.neo4j.driver.Record record = result.next();
+
+                // Lấy thông tin từ bản ghi
+                String job_title = record.get("job_title").asString();
+                String company_name = record.get("company_name").asString();
+
+                // Giả sử bạn đã xác định model là một DefaultTableModel
+                model.addRow(new Object[]{ job_title, company_name});
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Ghi lại bất kỳ lỗi nào
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -212,6 +249,17 @@ public class frmThongTin extends javax.swing.JFrame {
         btn_Delete = new javax.swing.JButton();
         btn_Sua = new javax.swing.JButton();
         pnCongViec = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblWork = new javax.swing.JTable();
+        jLabel24 = new javax.swing.JLabel();
+        txtNameJob = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        cboNameCompany = new javax.swing.JComboBox<>();
+        btnDeleteWork = new javax.swing.JButton();
+        btnAddWork = new javax.swing.JButton();
+        btnUpateWork = new javax.swing.JButton();
+        btnAddNewCompany = new javax.swing.JButton();
+        jLabel26 = new javax.swing.JLabel();
         pnQuanHe = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -556,7 +604,6 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Id event");
 
-        txtIdEvent.setBackground(new java.awt.Color(255, 255, 255));
         txtIdEvent.setForeground(new java.awt.Color(0, 0, 0));
 
         btnDelete.setBackground(new java.awt.Color(255, 255, 255));
@@ -591,17 +638,14 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel14.setForeground(new java.awt.Color(255, 255, 255));
         jLabel14.setText("Role");
 
-        txtRole.setBackground(new java.awt.Color(255, 255, 255));
         txtRole.setForeground(new java.awt.Color(0, 0, 0));
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Date");
 
-        txtDate.setBackground(new java.awt.Color(255, 255, 255));
         txtDate.setForeground(new java.awt.Color(0, 0, 0));
 
-        txtTypeEvent.setBackground(new java.awt.Color(255, 255, 255));
         txtTypeEvent.setForeground(new java.awt.Color(0, 0, 0));
 
         javax.swing.GroupLayout pnSuKienLayout = new javax.swing.GroupLayout(pnSuKien);
@@ -878,17 +922,130 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        pnCongViec.setBackground(new java.awt.Color(255, 102, 102));
+        pnCongViec.setBackground(new java.awt.Color(255, 255, 255));
+
+        tblWork.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Name Job", "Name Company"
+            }
+        ));
+        tblWork.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblWorkMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tblWork);
+
+        jLabel24.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel24.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel24.setText("name job: ");
+
+        txtNameJob.setToolTipText("");
+
+        jLabel25.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel25.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel25.setText("name company: ");
+
+        cboNameCompany.setBackground(new java.awt.Color(255, 255, 255));
+        cboNameCompany.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cboNameCompany.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cboNameCompanyItemStateChanged(evt);
+            }
+        });
+        cboNameCompany.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cboNameCompanyMouseClicked(evt);
+            }
+        });
+
+        btnDeleteWork.setText("Delete");
+        btnDeleteWork.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteWorkActionPerformed(evt);
+            }
+        });
+
+        btnAddWork.setText("Add");
+        btnAddWork.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddWorkActionPerformed(evt);
+            }
+        });
+
+        btnUpateWork.setText("Update");
+        btnUpateWork.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpateWorkActionPerformed(evt);
+            }
+        });
+
+        btnAddNewCompany.setText("Add new Company");
+        btnAddNewCompany.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddNewCompanyActionPerformed(evt);
+            }
+        });
+
+        jLabel26.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel26.setText("Công việc");
 
         javax.swing.GroupLayout pnCongViecLayout = new javax.swing.GroupLayout(pnCongViec);
         pnCongViec.setLayout(pnCongViecLayout);
         pnCongViecLayout.setHorizontalGroup(
             pnCongViecLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 513, Short.MAX_VALUE)
+            .addComponent(jScrollPane3)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnCongViecLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnCongViecLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnCongViecLayout.createSequentialGroup()
+                        .addComponent(jLabel24)
+                        .addGap(39, 39, 39)
+                        .addComponent(txtNameJob))
+                    .addGroup(pnCongViecLayout.createSequentialGroup()
+                        .addComponent(jLabel25)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cboNameCompany, 0, 214, Short.MAX_VALUE)))
+                .addGap(26, 26, 26)
+                .addGroup(pnCongViecLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(pnCongViecLayout.createSequentialGroup()
+                        .addComponent(btnAddWork)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnUpateWork))
+                    .addComponent(btnAddNewCompany, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnDeleteWork, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(36, 36, 36))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnCongViecLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel26)
+                .addGap(231, 231, 231))
         );
         pnCongViecLayout.setVerticalGroup(
             pnCongViecLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 399, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnCongViecLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel26)
+                .addGap(38, 38, 38)
+                .addGroup(pnCongViecLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel24)
+                    .addComponent(txtNameJob, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnUpateWork)
+                    .addComponent(btnAddWork))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pnCongViecLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel25)
+                    .addComponent(cboNameCompany, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDeleteWork))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnAddNewCompany)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pnQuanHe.setBackground(new java.awt.Color(102, 102, 0));
@@ -968,6 +1125,81 @@ public class frmThongTin extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txt_IssuedateFocusLost
 
+    private void tblWorkMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblWorkMouseClicked
+        int index=tblWork.getSelectedRow();
+        txtNameJob.setText(tblWork.getValueAt(index, 0).toString());
+        cboNameCompany.setSelectedItem(tblWork.getValueAt(index, 1).toString());
+    }//GEN-LAST:event_tblWorkMouseClicked
+
+    private void cboNameCompanyItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cboNameCompanyItemStateChanged
+
+    }//GEN-LAST:event_cboNameCompanyItemStateChanged
+
+    private void cboNameCompanyMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cboNameCompanyMouseClicked
+
+    }//GEN-LAST:event_cboNameCompanyMouseClicked
+
+    private void btnUpateWorkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpateWorkActionPerformed
+        if (txtNameJob.getText().isEmpty() || cboNameCompany.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(null, "Không được để trống các trường thông tin.");
+            return; // Dừng hàm nếu có trường rỗng
+        }
+
+        try (var session = neo4jConnection.getSession()) {
+            // Truy vấn sửa thông tin làm việc
+            session.run("MATCH (ci:Citizen {id: $citizenId})-[w:WORKS_AT]->(com:Company {company_name: $companyName}) " +
+                "SET w.job_title = $jobTitle",
+                org.neo4j.driver.Values.parameters("citizenId", id, "jobTitle", txtNameJob.getText().toString(), "companyName", cboNameCompany.getSelectedItem().toString()));
+            System.out.println("Cập nhật thông tin thành công.");
+        } catch (Exception e) {
+            e.printStackTrace(); // Ghi lại bất kỳ lỗi nào
+        }
+        loadWork(id);
+    }//GEN-LAST:event_btnUpateWorkActionPerformed
+
+    private void btnAddWorkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddWorkActionPerformed
+        // Kiểm tra các trường dữ liệu
+        if (txtNameJob.toString().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Không được để trống các trường thông tin.");
+            return; // Dừng hàm nếu có trường rỗng
+        }
+
+        try (var session = neo4jConnection.getSession()) {
+            // Truy vấn thêm thông tin làm việc
+            session.run("MATCH (ci:Citizen {id: $citizenId}), (com:Company {company_name: $companyName}) " +
+                "CREATE (ci)-[:WORKS_AT {job_title: $jobTitle}]->(com)",
+                org.neo4j.driver.Values.parameters("citizenId", id, "jobTitle", txtNameJob.getText().toString(), "companyName", cboNameCompany.getSelectedItem().toString()));
+            System.out.println("Thêm thông tin thành công.");
+        } catch (Exception e) {
+            e.printStackTrace(); // Ghi lại bất kỳ lỗi nào
+        }
+        loadWork(id);
+    }//GEN-LAST:event_btnAddWorkActionPerformed
+
+    private void btnDeleteWorkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteWorkActionPerformed
+        // Kiểm tra các trường dữ liệu
+        if (cboNameCompany.getSelectedItem() == null) {
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn công ty để xóa.");
+            return; // Dừng hàm nếu không có công ty được chọn
+        }
+
+        try (var session = neo4jConnection.getSession()) {
+            // Truy vấn xóa thông tin làm việc
+            session.run("MATCH (ci:Citizen {id: $citizenId})-[w:WORKS_AT]->(com:Company {company_name: $companyName}) " +
+                "DELETE w",
+                org.neo4j.driver.Values.parameters("citizenId", id, "companyName", cboNameCompany.getSelectedItem().toString()));
+            System.out.println("Xóa thông tin thành công.");
+        } catch (Exception e) {
+            e.printStackTrace(); // Ghi lại bất kỳ lỗi nào
+        }
+        loadWork(id);
+    }//GEN-LAST:event_btnDeleteWorkActionPerformed
+
+    private void btnAddNewCompanyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewCompanyActionPerformed
+        Company frm = new Company();
+        frm.setVisible(true);
+    }//GEN-LAST:event_btnAddNewCompanyActionPerformed
+
     private void btnGiayToMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_btnGiayToMouseClicked
         pnGiayTo.setVisible(true);
         pnCongViec.setVisible(false);
@@ -980,6 +1212,8 @@ public class frmThongTin extends javax.swing.JFrame {
         pnGiayTo.setVisible(false);
         pnQuanHe.setVisible(false);
         pnSuKien.setVisible(false);
+        loadWork(id);
+        loadCboCompany();
     }// GEN-LAST:event_btnCongViecMouseClicked
 
     private void btnQuanHeMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_btnQuanHeMouseClicked
@@ -1380,16 +1614,21 @@ public class frmThongTin extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnAddNewCompany;
+    private javax.swing.JButton btnAddWork;
     private javax.swing.JPanel btnCongViec;
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnDeleteWork;
     private javax.swing.JPanel btnExit;
     private javax.swing.JPanel btnGiayTo;
     private javax.swing.JPanel btnQuanHe;
     private javax.swing.JPanel btnSuKien;
+    private javax.swing.JButton btnUpateWork;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btn_Create;
     private javax.swing.JButton btn_Delete;
     private javax.swing.JButton btn_Sua;
+    private javax.swing.JComboBox<String> cboNameCompany;
     private javax.swing.JComboBox<String> cbo_Type;
     private javax.swing.JLabel imgAvata;
     private javax.swing.JLabel jLabel1;
@@ -1408,6 +1647,9 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1422,6 +1664,7 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel lb_DOB;
     private javax.swing.JLabel lb_Gender;
     private javax.swing.JLabel lb_IDCitizen;
@@ -1434,8 +1677,10 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JPanel pnSuKien;
     private javax.swing.JTable tbEvent;
     private javax.swing.JTable tb_Document;
+    private javax.swing.JTable tblWork;
     private javax.swing.JTextField txtDate;
     private javax.swing.JTextField txtIdEvent;
+    private javax.swing.JTextField txtNameJob;
     private javax.swing.JTextField txtRole;
     private javax.swing.JTextField txtTypeEvent;
     private javax.swing.JTextField txt_Agencyaddress;
