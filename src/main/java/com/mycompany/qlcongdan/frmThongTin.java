@@ -210,6 +210,7 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         lb_DOB = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
+        btnAddress = new javax.swing.JButton();
         pnContainer = new javax.swing.JPanel();
         pnSuKien = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -472,6 +473,13 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel13.setText("Năm sinh:");
 
+        btnAddress.setText("Địa chỉ");
+        btnAddress.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddressActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -505,7 +513,8 @@ public class frmThongTin extends javax.swing.JFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lb_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lb_Name, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnAddress))
                 .addGap(16, 16, 16))
         );
         jPanel4Layout.setVerticalGroup(
@@ -534,7 +543,8 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel13)
-                    .addComponent(lb_DOB))
+                    .addComponent(lb_DOB)
+                    .addComponent(btnAddress))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
 
@@ -841,7 +851,7 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addComponent(btn_Create, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
                 .addComponent(btn_Sua, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(btn_Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(17, 17, 17))
         );
@@ -1129,6 +1139,11 @@ public class frmThongTin extends javax.swing.JFrame {
         Company frm = new Company();
         frm.setVisible(true);
     }//GEN-LAST:event_btnAddNewCompanyActionPerformed
+
+    private void btnAddressActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddressActionPerformed
+        Address frm=new Address(this.id);
+        frm.setVisible(true);
+    }//GEN-LAST:event_btnAddressActionPerformed
 
     private void btnGiayToMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_btnGiayToMouseClicked
         pnGiayTo.setVisible(true);
@@ -1537,6 +1552,7 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnAddNewCompany;
     private javax.swing.JButton btnAddWork;
+    private javax.swing.JButton btnAddress;
     private javax.swing.JPanel btnCongViec;
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnDeleteWork;

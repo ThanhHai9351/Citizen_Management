@@ -369,6 +369,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="lb_Name" min="-2" pref="156" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="btnAddress" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
               </Group>
@@ -408,6 +409,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="jLabel13" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="lb_DOB" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnAddress" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace pref="24" max="32767" attributes="0"/>
               </Group>
@@ -535,6 +537,14 @@
             </Property>
             <Property name="text" type="java.lang.String" value="N&#x103;m sinh:"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnAddress">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&#x110;&#x1ecb;a ch&#x1ec9;"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAddressActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -1088,7 +1098,7 @@
                           <Component id="btn_Create" min="-2" pref="41" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
                           <Component id="btn_Sua" min="-2" pref="41" max="-2" attributes="0"/>
-                          <EmptySpace pref="35" max="32767" attributes="0"/>
+                          <EmptySpace pref="30" max="32767" attributes="0"/>
                           <Component id="btn_Delete" min="-2" pref="41" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
                       </Group>
