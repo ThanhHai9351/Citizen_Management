@@ -34,12 +34,11 @@ public class frmThongTin extends javax.swing.JFrame {
     /**
      * Creates new form frmThongTin
      */
-    String id = "C004";
+    String id = "";
     private Neo4jConnection neo4jConnection;
 
     public frmThongTin() {
         neo4jConnection = new Neo4jConnection();
-
         initComponents();
         btnGiayTo.setVisible(true);
         showIcon();
@@ -82,11 +81,14 @@ public class frmThongTin extends javax.swing.JFrame {
     }
 
     public frmThongTin(String id) {
-        initComponents();
-        pnGiayTo.setVisible(true);
-        showIcon();
+        neo4jConnection = new Neo4jConnection();
         this.id = id;
+        initComponents();
+        btnGiayTo.setVisible(true);
+        showIcon();
         showInformationCitizen(id);
+        showTableDocument(id);
+        showType();
     }
 
     public void showIcon() {
@@ -194,8 +196,6 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         btnCongViec = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
-        btnQuanHe = new javax.swing.JPanel();
-        jLabel9 = new javax.swing.JLabel();
         btnSuKien = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
@@ -260,7 +260,6 @@ public class frmThongTin extends javax.swing.JFrame {
         btnUpateWork = new javax.swing.JButton();
         btnAddNewCompany = new javax.swing.JButton();
         jLabel26 = new javax.swing.JLabel();
-        pnQuanHe = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -374,35 +373,6 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addContainerGap(25, Short.MAX_VALUE))
         );
 
-        btnQuanHe.setBackground(new java.awt.Color(153, 153, 153));
-        btnQuanHe.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        btnQuanHe.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnQuanHe.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btnQuanHeMouseClicked(evt);
-            }
-        });
-
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("QUAN HỆ");
-
-        javax.swing.GroupLayout btnQuanHeLayout = new javax.swing.GroupLayout(btnQuanHe);
-        btnQuanHe.setLayout(btnQuanHeLayout);
-        btnQuanHeLayout.setHorizontalGroup(
-            btnQuanHeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnQuanHeLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-        btnQuanHeLayout.setVerticalGroup(
-            btnQuanHeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(btnQuanHeLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(jLabel9)
-                .addContainerGap(24, Short.MAX_VALUE))
-        );
-
         btnSuKien.setBackground(new java.awt.Color(153, 153, 153));
         btnSuKien.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnSuKien.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -440,7 +410,6 @@ public class frmThongTin extends javax.swing.JFrame {
             .addComponent(btnExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnGiayTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnCongViec, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(btnQuanHe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(btnSuKien, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
@@ -451,8 +420,6 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addComponent(btnGiayTo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnCongViec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnQuanHe, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSuKien, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -466,7 +433,6 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel4.setText("THÔNG TIN CÔNG DÂN");
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Mã công dân:");
 
         lb_IDCitizen.setBackground(new java.awt.Color(0, 51, 255));
@@ -480,11 +446,9 @@ public class frmThongTin extends javax.swing.JFrame {
         lb_Name.setText("2001215742");
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setText("Tên công dân");
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("Giới tính");
 
         lb_Gender.setBackground(new java.awt.Color(0, 51, 255));
@@ -498,7 +462,6 @@ public class frmThongTin extends javax.swing.JFrame {
         lb_Nationality.setText("2001215742");
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setText("Quốc tịch:");
 
         lb_DOB.setBackground(new java.awt.Color(0, 51, 255));
@@ -507,7 +470,6 @@ public class frmThongTin extends javax.swing.JFrame {
         lb_DOB.setText("2001215742");
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
         jLabel13.setText("Năm sinh:");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -582,8 +544,6 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Type event");
 
-        btnAdd.setBackground(new java.awt.Color(255, 255, 255));
-        btnAdd.setForeground(new java.awt.Color(0, 0, 0));
         btnAdd.setText("Add");
         btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -591,8 +551,6 @@ public class frmThongTin extends javax.swing.JFrame {
             }
         });
 
-        btnUpdate.setBackground(new java.awt.Color(255, 255, 255));
-        btnUpdate.setForeground(new java.awt.Color(0, 0, 0));
         btnUpdate.setText("Update");
         btnUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -604,10 +562,6 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Id event");
 
-        txtIdEvent.setForeground(new java.awt.Color(0, 0, 0));
-
-        btnDelete.setBackground(new java.awt.Color(255, 255, 255));
-        btnDelete.setForeground(new java.awt.Color(0, 0, 0));
         btnDelete.setText("Delete");
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -638,15 +592,9 @@ public class frmThongTin extends javax.swing.JFrame {
         jLabel14.setForeground(new java.awt.Color(255, 255, 255));
         jLabel14.setText("Role");
 
-        txtRole.setForeground(new java.awt.Color(0, 0, 0));
-
         jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Date");
-
-        txtDate.setForeground(new java.awt.Color(0, 0, 0));
-
-        txtTypeEvent.setForeground(new java.awt.Color(0, 0, 0));
 
         javax.swing.GroupLayout pnSuKienLayout = new javax.swing.GroupLayout(pnSuKien);
         pnSuKien.setLayout(pnSuKienLayout);
@@ -657,24 +605,26 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jScrollPane1)
                     .addGroup(pnSuKienLayout.createSequentialGroup()
-                        .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGap(0, 442, Short.MAX_VALUE)
+                        .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(pnSuKienLayout.createSequentialGroup()
-                                .addComponent(jLabel14)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtRole, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(pnSuKienLayout.createSequentialGroup()
-                                .addComponent(jLabel15)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, pnSuKienLayout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtIdEvent, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(pnSuKienLayout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(jLabel1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtTypeEvent, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtTypeEvent, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(pnSuKienLayout.createSequentialGroup()
+                                .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(pnSuKienLayout.createSequentialGroup()
+                                        .addComponent(jLabel14)
+                                        .addGap(26, 26, 26))
+                                    .addGroup(pnSuKienLayout.createSequentialGroup()
+                                        .addComponent(jLabel15)
+                                        .addGap(24, 24, 24))
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtIdEvent, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtDate, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtRole, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pnSuKienLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(pnSuKienLayout.createSequentialGroup()
@@ -708,7 +658,7 @@ public class frmThongTin extends javax.swing.JFrame {
                     .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pnGiayTo.setBackground(new java.awt.Color(255, 255, 255));
@@ -891,7 +841,7 @@ public class frmThongTin extends javax.swing.JFrame {
                 .addComponent(btn_Create, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
                 .addComponent(btn_Sua, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
                 .addComponent(btn_Delete, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(17, 17, 17))
         );
@@ -907,7 +857,7 @@ public class frmThongTin extends javax.swing.JFrame {
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 779, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 960, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 958, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pnGiayToLayout.setVerticalGroup(
@@ -943,16 +893,13 @@ public class frmThongTin extends javax.swing.JFrame {
         jScrollPane3.setViewportView(tblWork);
 
         jLabel24.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel24.setForeground(new java.awt.Color(0, 0, 0));
         jLabel24.setText("name job: ");
 
         txtNameJob.setToolTipText("");
 
         jLabel25.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel25.setForeground(new java.awt.Color(0, 0, 0));
         jLabel25.setText("name company: ");
 
-        cboNameCompany.setBackground(new java.awt.Color(255, 255, 255));
         cboNameCompany.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboNameCompany.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1011,7 +958,7 @@ public class frmThongTin extends javax.swing.JFrame {
                     .addGroup(pnCongViecLayout.createSequentialGroup()
                         .addComponent(jLabel25)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cboNameCompany, 0, 214, Short.MAX_VALUE)))
+                        .addComponent(cboNameCompany, 0, 653, Short.MAX_VALUE)))
                 .addGap(26, 26, 26)
                 .addGroup(pnCongViecLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(pnCongViecLayout.createSequentialGroup()
@@ -1044,21 +991,8 @@ public class frmThongTin extends javax.swing.JFrame {
                     .addComponent(btnDeleteWork))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnAddNewCompany)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        pnQuanHe.setBackground(new java.awt.Color(102, 102, 0));
-
-        javax.swing.GroupLayout pnQuanHeLayout = new javax.swing.GroupLayout(pnQuanHe);
-        pnQuanHe.setLayout(pnQuanHeLayout);
-        pnQuanHeLayout.setHorizontalGroup(
-            pnQuanHeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 954, Short.MAX_VALUE)
-        );
-        pnQuanHeLayout.setVerticalGroup(
-            pnQuanHeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 411, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout pnContainerLayout = new javax.swing.GroupLayout(pnContainer);
@@ -1069,8 +1003,6 @@ public class frmThongTin extends javax.swing.JFrame {
             .addGroup(pnContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(pnCongViec, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(pnContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(pnQuanHe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(pnContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(pnSuKien, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnContainerLayout.setVerticalGroup(
@@ -1078,8 +1010,6 @@ public class frmThongTin extends javax.swing.JFrame {
             .addComponent(pnGiayTo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(pnContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(pnCongViec, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(pnContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(pnQuanHe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(pnContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(pnSuKien, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1203,29 +1133,20 @@ public class frmThongTin extends javax.swing.JFrame {
     private void btnGiayToMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_btnGiayToMouseClicked
         pnGiayTo.setVisible(true);
         pnCongViec.setVisible(false);
-        pnQuanHe.setVisible(false);
         pnSuKien.setVisible(false);
     }// GEN-LAST:event_btnGiayToMouseClicked
 
     private void btnCongViecMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_btnCongViecMouseClicked
         pnCongViec.setVisible(true);
         pnGiayTo.setVisible(false);
-        pnQuanHe.setVisible(false);
         pnSuKien.setVisible(false);
         loadWork(id);
         loadCboCompany();
     }// GEN-LAST:event_btnCongViecMouseClicked
 
-    private void btnQuanHeMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_btnQuanHeMouseClicked
-        pnQuanHe.setVisible(true);
-        pnCongViec.setVisible(false);
-        pnGiayTo.setVisible(false);
-        pnSuKien.setVisible(false);
-    }// GEN-LAST:event_btnQuanHeMouseClicked
 
     private void btnSuKienMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_btnSuKienMouseClicked
         pnSuKien.setVisible(true);
-        pnQuanHe.setVisible(false);
         pnCongViec.setVisible(false);
         pnGiayTo.setVisible(false);
         loadPNSuKien(id);
@@ -1621,7 +1542,6 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JButton btnDeleteWork;
     private javax.swing.JPanel btnExit;
     private javax.swing.JPanel btnGiayTo;
-    private javax.swing.JPanel btnQuanHe;
     private javax.swing.JPanel btnSuKien;
     private javax.swing.JButton btnUpateWork;
     private javax.swing.JButton btnUpdate;
@@ -1656,7 +1576,6 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -1673,7 +1592,6 @@ public class frmThongTin extends javax.swing.JFrame {
     private javax.swing.JPanel pnCongViec;
     private javax.swing.JPanel pnContainer;
     private javax.swing.JPanel pnGiayTo;
-    private javax.swing.JPanel pnQuanHe;
     private javax.swing.JPanel pnSuKien;
     private javax.swing.JTable tbEvent;
     private javax.swing.JTable tb_Document;
